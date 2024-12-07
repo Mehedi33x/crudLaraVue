@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 Route::get('/', [ProductController::class, 'index']);
-
 Route::post('product/store', [ProductController::class, 'store'])->name('product.store');
-
+Route::get('/product/edit/{id}', [ProductController::class, 'edit']);
+Route::post('/product/update/{id}', [ProductController::class, 'update']);
 Route::delete('products/{id}', [ProductController::class, 'destroy']);

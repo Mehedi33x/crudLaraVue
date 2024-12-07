@@ -19,7 +19,7 @@
                     <td>{{ item.price }}</td>
                     <td>{{ item.description }}</td>
                     <td>
-                        <button @click="editProduct()" class="btn btn-primary btn-sm">Edit</button>
+                        <button @click="editProduct(item.id)" class="btn btn-primary btn-sm">Edit</button>
                         <button :disabled="loading" @click="deleteProduct(item.id)"
                             class="btn btn-danger btn-sm mx-1">Delete</button>
                     </td>
@@ -113,10 +113,13 @@ export default {
                     this.loading = false;
                 }
             });
+        },
+        editProduct(productId) {
+            this.$router.push({ name: 'product.edit', params: { id: productId } });
         }
     },
     mounted() {
-        const successMessage = this.$route.query.successMessage;
+        const successMessage = localStorage.getItem('successMessage');
         if (successMessage) {
             Swal.fire({
                 position: 'top-end',
@@ -127,6 +130,7 @@ export default {
                 timer: 3000,
                 toast: true,
             });
+            localStorage.removeItem('successMessage');
         }
     },
     created() {

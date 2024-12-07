@@ -65,6 +65,9 @@ export default {
                 description: '',
                 image: '',
             },
+            isEdit: false,
+            productId: null,
+
         };
     },
     methods: {
@@ -79,15 +82,42 @@ export default {
                 formData.append('category_id', this.form.category_id);
                 formData.append('description', this.form.description);
                 // formData.append('image', this.form.image);
-                const response = await axios.post('/api/product/store', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-                this.$router.push({ name: 'product.index',
-                    query: {successMessage: response.data.message},
-                 });
+
+                if (this.isEdit == true) {
+                    const response = await axios.post(`/api/product/update/${this.productId}`, formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    });
+                    if (response.status === 200) {
+                        localStorage.setItem('successMessage', response.data.message);
+                        this.$router.push({
+                            name: 'product.index',
+                        });
+                    }
+                } else {
+                    const response = await axios.post('/api/product/store', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    });
+                    if (response.status === 201) {
+                        localStorage.setItem('successMessage', response.data.message);
+                        this.$router.push({
+                            name: 'product.index',
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong!',
+                        });
+                    }
+                }
+
             } catch (error) {
+                console.log('eeper', error);
+
                 console.error(error.response?.data || error.message);
                 Swal.fire({
                     icon: 'error',
@@ -96,6 +126,29 @@ export default {
                 });
             }
         },
+        async fetchProductData() {
+            if (this.productId) {
+                try {
+                    const response = await axios.get(`/api/product/edit/${this.productId}`);
+                    this.form = response.data;
+                    this.isEdit = true;
+                } catch (error) {
+                    console.error('Error fetching product:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to fetch product details.',
+                    });
+                }
+            }
+        }
+    },
+    created() {
+        if (this.$route.params.id) {
+            this.isEdit = true;
+            this.productId = this.$route.params.id;
+            this.fetchProductData();
+        }
     }
 };
 </script>
