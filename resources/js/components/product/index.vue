@@ -6,6 +6,7 @@
             <thead>
                 <tr>
                     <th scope="col">#</th>
+                    <th scope="col">Image</th>
                     <th scope="col">Prouct Name</th>
                     <th scope="col">Pirce</th>
                     <th scope="col">Description</th>
@@ -15,6 +16,7 @@
             <tbody v-if="products.length > 0">
                 <tr v-for="(item, index) in products" :key="index">
                     <th scope="row">{{ index + 1 }}</th>
+                    <td><img v-if="item.image_url" :src="item.image_url" alt="Product Image" style="height: 40px;width: 40px;" /></td>
                     <td>{{ item.name }}</td>
                     <td>{{ item.price }}</td>
                     <td>{{ item.description }}</td>

@@ -29,7 +29,7 @@
                 </div>
                 <div class="input-group mb-3">
                     <label for="inputGroupSelect04" class="input-group mb-2">Images</label>
-                    <input @change="handleFileUpload" type="file" class="form-control">
+                    <input @change="handleFileUpload" name="image" type="file" class="form-control" accept="image/*">
                     <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Button</button>
                 </div>
 
@@ -73,6 +73,8 @@ export default {
     methods: {
         handleFileUpload(event) {
             this.form.image = event.target.files[0];
+            console.log('upload',this.form.image);
+            
         },
         async saveData() {
             try {
@@ -81,7 +83,7 @@ export default {
                 formData.append('price', this.form.price);
                 formData.append('category_id', this.form.category_id);
                 formData.append('description', this.form.description);
-                // formData.append('image', this.form.image);
+                formData.append('image', this.form.image);
 
                 if (this.isEdit == true) {
                     const response = await axios.post(`/api/product/update/${this.productId}`, formData, {
@@ -116,8 +118,6 @@ export default {
                 }
 
             } catch (error) {
-                console.log('eeper', error);
-
                 console.error(error.response?.data || error.message);
                 Swal.fire({
                     icon: 'error',

@@ -3,10 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Services\FileService;
+use App\Services\ProductService;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    protected $productService;
+    protected $fileService;
+    public function __construct(ProductService $productService, FileService $fileService)
+    {
+        $this->productService = $productService;
+        $this->fileService = $fileService;
+    }
     public function index()
     {
         $products = Product::all();
@@ -14,24 +23,17 @@ class ProductController extends Controller
     }
     public function store(Request $request)
     {
-
-        $request->validate([
-            'name' => 'required',
-            'category_id' => 'required',
-            'price' => 'required',
-        ]);
-
-        $product = Product::create([
-            'name' => $request->name,
-            'category_id' => $request->category_id,
-            'price' => $request->price,
-            'description' => $request->description,
-        ]);
+        $this->doValidation($request);
+        $filename = $request->hasFile('image')
+        ? $this->fileService->storeFile($request->file('image'), 'images')
+        : null;
+        $data=$request->all();
+        $data['image'] = $filename;
+        $product = $this->productService->store(new Product(), $data);
         return response()->json([
             'message' => 'Product created successfully',
-            'product' => $request->all(),
+            'product' => $product,
         ], 201);
-
     }
 
     public function edit($id)
@@ -46,24 +48,21 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required',
-            'category_id' => 'required',
-            'price' => 'required',
-        ]);
+        $this->doValidation($request, $id);
         $product = Product::find($id);
         if (!$product) {
             return response()->json(['error' => 'Product not found'], 404);
         }
-        $product->update([
-            'name' => $request->name,
-            'category_id' => $request->category_id,
-            'price' => $request->price,
-            'description' => $request->description,
-        ]);
+        $filename = $request->hasFile('image')
+            ? $this->fileService->updateFile($request->file('image'), 'images', $product->image)
+            : $product->image;
+
+            $data=$request->all();
+            $data['image'] = $filename;
+        $product = $this->productService->update(new Product(), $data);
         return response()->json([
             'message' => 'Product updated successfully',
-            'product' => $request->all(),
+            'product' => $data,
         ], 200);
     }
 
@@ -73,9 +72,24 @@ class ProductController extends Controller
         if (!$product) {
             return response()->json(['error' => 'Product not found'], 404);
         }
-        // return false;
+        if ($product->image) {
+            $this->fileService->deleteFile('images/' . $product->image);
+        }
         $product->delete();
         return response()->json(['message' => 'Product deleted successfully'], 200);
+    }
+
+    private function doValidation(Request $request)
+    {
+        // dd($request->all());
+        return $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|integer',
+            'price' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+            // 'image' => 'nullable|mimes:jpeg,png,jpg,gif|max:2048|string',
+
+        ]);
     }
 
 }
