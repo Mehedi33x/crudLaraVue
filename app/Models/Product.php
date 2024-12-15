@@ -12,6 +12,6 @@ class Product extends Model
     protected $appends=['image_url'];
     public function getImageUrlAttribute()
     {
-        return $this->image ? asset('storage/images/' . $this->image) : null;
+        return $this->image ? asset('storage/products/' . $this->image) : null;
     }
 }

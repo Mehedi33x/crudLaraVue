@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,9 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::get('/', [ProductController::class, 'index']);
 Route::post('product/store', [ProductController::class, 'store'])->name('product.store');
+Route::get('/product/show/{id}', [ProductController::class, 'show']);
 Route::get('/product/edit/{id}', [ProductController::class, 'edit']);
 Route::post('/product/update/{id}', [ProductController::class, 'update']);
 Route::delete('products/{id}', [ProductController::class, 'destroy']);
+
+Route::post('user/create', [UserController::class, 'store'])->name('user.store');

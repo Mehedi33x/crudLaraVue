@@ -18,14 +18,14 @@ class ProductController extends Controller
     }
     public function index()
     {
-        $products = Product::all();
+        $products = Product::select('id','name','price','image')->get();
         return response()->json($products);
     }
     public function store(Request $request)
     {
         $this->doValidation($request);
         $filename = $request->hasFile('image')
-        ? $this->fileService->storeFile($request->file('image'), 'images')
+        ? $this->fileService->storeFile($request->file('image'), 'products')
         : null;
         $data=$request->all();
         $data['image'] = $filename;
@@ -36,6 +36,15 @@ class ProductController extends Controller
         ], 201);
     }
 
+    public function show($id){
+        // dd($id);
+        $product = Product::find($id);
+        if ($product) {
+            return response()->json($product);
+        } else {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+    }
     public function edit($id)
     {
         $product = Product::find($id);

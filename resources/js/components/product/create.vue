@@ -1,47 +1,52 @@
 <template>
-    <h3 class="text-center mt-4">Create Product</h3>
-    <hr>
-    <div class="mx-5 mt-2">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label">Name</label>
-                    <input v-model="form.name" type="text" name="name" class="form-control"
-                        placeholder="Enter Product Name">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Price</label>
-                    <input v-model="form.price" type="text" name="price" class="form-control"
-                        placeholder="Enter Product Price">
-                </div>
+    <div class="container">
+        <h3 class="text-center mt-4">Create Product</h3>
+        <hr>
+        <div class="mx-5 mt-2">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input v-model="form.name" type="text" name="name" class="form-control"
+                            placeholder="Enter Product Name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Price</label>
+                        <input v-model="form.price" type="text" name="price" class="form-control"
+                            placeholder="Enter Product Price">
+                    </div>
 
-            </div>
-            <div class="col-md-6">
-                <div class="input-group mb-3">
-                    <label for="inputGroupSelect04" class="input-group mb-2">Choose Option</label>
-                    <select v-model="form.category_id" class="form-select" id="inputGroupSelect04"
-                        aria-label="Example select with button addon">
-                        <option selected>Choose...</option>
-                        <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        <label for="inputGroupSelect04" class="input-group mb-2">Choose Option</label>
+                        <select v-model="form.category_id" class="form-select" id="inputGroupSelect04"
+                            aria-label="Example select with button addon">
+                            <option selected>Choose...</option>
+                            <option v-for="category in categories" :key="category.id" :value="category.id">{{
+                                category.name
                             }}</option>
-                    </select>
-                    <button class="btn btn-outline-secondary" type="button">Button</button>
-                </div>
-                <div class="input-group mb-3">
-                    <label for="inputGroupSelect04" class="input-group mb-2">Images</label>
-                    <input @change="handleFileUpload" name="image" type="file" class="form-control" accept="image/*">
-                    <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Button</button>
-                </div>
+                        </select>
+                        <button class="btn btn-outline-secondary" type="button">Button</button>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label for="inputGroupSelect04" class="input-group mb-2">Images</label>
+                        <input @change="handleFileUpload" name="image" type="file" class="form-control"
+                            accept="image/*">
+                        <button class="btn btn-outline-secondary" type="button"
+                            id="inputGroupFileAddon04">Button</button>
+                    </div>
 
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label">Description</label>
+                    <textarea v-model="form.description" class="form-control" id="exampleFormControlTextarea1"
+                        rows="3"></textarea>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
-                <textarea v-model="form.description" class="form-control" id="exampleFormControlTextarea1"
-                    rows="3"></textarea>
-            </div>
+            <button @click="saveData" type="button" class="btn btn-success">Success</button>
+
         </div>
-        <button @click="saveData" type="button" class="btn btn-success">Success</button>
-
     </div>
 </template>
 
@@ -73,8 +78,8 @@ export default {
     methods: {
         handleFileUpload(event) {
             this.form.image = event.target.files[0];
-            console.log('upload',this.form.image);
-            
+            console.log('upload', this.form.image);
+
         },
         async saveData() {
             try {
@@ -84,7 +89,7 @@ export default {
                 formData.append('category_id', this.form.category_id);
                 formData.append('description', this.form.description);
                 formData.append('image', this.form.image);
-
+                
                 if (this.isEdit == true) {
                     const response = await axios.post(`/api/product/update/${this.productId}`, formData, {
                         headers: {

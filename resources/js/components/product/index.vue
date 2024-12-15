@@ -1,38 +1,66 @@
 <template>
-    <h3 class="text-center mt-4">Product List</h3>
-    <button @click="createProduct" class="btn btn-success text-end">Create</button>
-    <div class="container mt-5">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Image</th>
-                    <th scope="col">Prouct Name</th>
-                    <th scope="col">Pirce</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody v-if="products.length > 0">
-                <tr v-for="(item, index) in products" :key="index">
-                    <th scope="row">{{ index + 1 }}</th>
-                    <td><img v-if="item.image_url" :src="item.image_url" alt="Product Image" style="height: 40px;width: 40px;" /></td>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.price }}</td>
-                    <td>{{ item.description }}</td>
-                    <td>
-                        <button @click="editProduct(item.id)" class="btn btn-primary btn-sm">Edit</button>
-                        <button :disabled="loading" @click="deleteProduct(item.id)"
-                            class="btn btn-danger btn-sm mx-1">Delete</button>
-                    </td>
-                </tr>
-            </tbody>
-            <tbody v-else>
-                <tr>
-                    <td :colspan="5" class="no-data">No data found</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="container">
+        <h3 class="text-center mt-4">Product List</h3>
+        <button @click="createProduct" class="btn btn-success text-end">Create</button>
+        <div class="container mt-5">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Prouct Name</th>
+                        <th scope="col">Pirce</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody v-if="products.length > 0">
+                    <tr v-for="(item, index) in products" :key="index">
+                        <th scope="row">{{ index + 1 }}</th>
+                        <td><img v-if="item.image_url" :src="item.image_url" alt="Product Image"
+                                style="height: 40px;width: 40px;" /></td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.price }}</td>
+                        <td>
+                            <button @click="showProduct(item.id)" class="btn btn-success btn-sm">View</button>
+                            <button @click="editProduct(item.id)" class="btn btn-primary btn-sm mx-1">Edit</button>
+                            <button :disabled="loading" @click="deleteProduct(item.id)"
+                                class="btn btn-danger btn-sm mx-0">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody v-else>
+                    <tr>
+                        <td :colspan="5" class="no-data">No data found</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <!-- Bootstrap Modal -->
+        <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="productModalLabel">Product Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div v-if="selectedProduct">                            <p><strong>Image:</strong></p>
+                             <img v-if="selectedProduct.image_url" :src="selectedProduct.image_url" alt="Product Image"
+                                class="img-fluid" style="height: 180px;width: 300px;"/>
+                            <p><strong>Name:</strong> {{ selectedProduct.name }}</p>
+                            <p><strong>Price:</strong> {{ selectedProduct.price }}</p>
+                            <p><strong>Description:</strong> {{ selectedProduct.description }}</p>
+                           
+                        </div>
+                    </div>
+                    <!-- <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div> -->
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -45,6 +73,7 @@ export default {
         return {
             products: [],
             loading: false,
+            selectedProduct: null,
         }
     },
     methods: {
@@ -62,6 +91,23 @@ export default {
                     icon: 'error',
                     title: 'Error',
                     text: 'Failed to fetch products.',
+                });
+            }
+        },
+        async showProduct(productId) {
+            try {
+                const response = await axios.get(`/api/product/show/${productId}`);
+                if (response.status === 200) {
+                    this.selectedProduct = response.data;
+                    const modal = new bootstrap.Modal(document.getElementById('productModal'));
+                    modal.show();
+                }
+            } catch (error) {
+                console.error('Error fetching product details:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to fetch product details.',
                 });
             }
         },
