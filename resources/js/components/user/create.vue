@@ -49,6 +49,8 @@
 
 <script>
 import axios from "axios";
+import Swal from 'sweetalert2';
+
 export default {
     data() {
         return {
@@ -73,6 +75,23 @@ export default {
             formData.append('address', this.form.address);
             try {
                 const response = await axios.post('/api/user/create', formData);
+                // console.log(response);
+                if (response.status === 201) {
+                    this.$router.push({
+                        name:'user.index'
+                    });
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'User has created successfully',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        toast: true,
+                    });
+
+                }
+
             } catch (error) {
                 const serverErrors = error.response.data.errors;
                 this.errors = Object.fromEntries(

@@ -3,4 +3,8 @@ import { createApp } from 'vue';
 
 import app from './components/App.vue';
 import router from './router';
-createApp(app).use(router).mount("#app");
+import Pagination from './components/others/Pagination.vue';
+createApp(app)
+.component('Pagination', Pagination)
+.use(router)
+.mount("#app");

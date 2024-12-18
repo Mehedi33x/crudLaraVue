@@ -6,7 +6,7 @@
         </router-link>
         <a class="py-2 d-none d-md-inline-block" href="#">Tour</a>
         <router-link class="py-2 d-none d-md-inline-block" :to="{ name:'product.index'}">Product</router-link>
-        <router-link class="py-2 d-none d-md-inline-block" :to="{name:'user.create'}">User</router-link>
+        <router-link class="py-2 d-none d-md-inline-block" :to="{name:'user.index'}">User</router-link>
         <a class="py-2 d-none d-md-inline-block" href="#">Enterprise</a>
         <a class="py-2 d-none d-md-inline-block" href="#">Support</a>
         <a class="py-2 d-none d-md-inline-block" href="#">Pricing</a>

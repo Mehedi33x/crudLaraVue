@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -10,9 +11,21 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+
+    protected $userService;
+    public function __construct(UserService $userService)
     {
-        //
+        $this->userService = $userService;
+    }
+    public function index(Request $request)
+    {
+        $paging = $request->perPage;
+        $users = User::select('id', 'name', 'email', 'phone', 'address')->latest()->paginate($paging);
+        return response()->json([
+            'data' => $users->items(), 
+            'currentPage' => $users->currentPage(),
+            'totalPages' => $users->lastPage(),
+        ]); 
     }
 
     /**
@@ -22,8 +35,19 @@ class UserController extends Controller
     {
         $this->doValidate($request);
         $data = $request->all();
-        // dd($data);
+        $user = $this->userService->store(new User(), $data);
+        if ($user) {
+            return response()->json([
+                'message' => 'User created successfully',
+                'product' => $user,
+            ], 201);
+        } else {
+            return response()->json([
+                'message' => 'User created successfully',
+                'product' => $user,
+            ], 400);
         }
+    }
 
     /**
      * Display the specified resource.
@@ -49,11 +73,12 @@ class UserController extends Controller
         //
     }
 
-    protected function doValidate(Request $request){
+    protected function doValidate(Request $request)
+    {
         return $request->validate([
-            'name'=>'required',
-            'email'=>'required|email',
-            'password'=>'required|min:6',
+            'name' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:6',
         ]);
     }
 }

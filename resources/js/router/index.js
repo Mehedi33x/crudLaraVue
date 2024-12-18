@@ -1,36 +1,37 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomePage from '../components/home/Home.vue'
-import productIndex from '../components/product/index.vue'
-import productCreate from '../components/product/create.vue'
-import userCreate from '../components/user/create.vue'
 
-const routes =[
+const routes = [
     {
         path: '/',
         name: 'home',
-        component: HomePage,
+        component: () => import('../components/home/Home.vue'),
     },
     {
         path: '/product/list',
         name: 'product.index',
-        component: productIndex
+        component: () => import('../components/product/index.vue'),
     },
     {
         path: '/product/create',
         name: 'product.create',
-        component: productCreate
+        component: () => import('../components/product/create.vue'),
     },
     {
         path: '/product/edit/:id',
         name: 'product.edit',
-        component: productCreate
+        component: () => import('../components/product/create.vue'),
+    },
+    {
+        path: '/user/list',
+        name: 'user.index',
+        component: () => import('../components/user/index.vue'),
     },
     {
         path: '/user/create',
         name: 'user.create',
-        component: userCreate
+        component: () => import('../components/user/create.vue'),
     },
-]
+];
 
 const router = createRouter({
     history: createWebHistory(),

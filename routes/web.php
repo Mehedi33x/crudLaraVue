@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,9 +14,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+// Route::get('/{any}', function () {
+//     return view('app');
+// })->where('any', '.*');
+Route::get('login', [AuthController::class,'login'])->name('login');
 Route::get('/{any}', function () {
     return view('app');
-})->where('any', '.*');
+})->where('any', '^(?!api).*$');
+
+Route::fallback(function () {
+    return response()->view('errors.404', [], 404);
+});
+
